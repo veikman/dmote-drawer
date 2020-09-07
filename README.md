@@ -1,6 +1,7 @@
-# dmote-drawer
+# `dmote-drawer`
 
-An application that produces a three-dimensional geometry.
+An application that produces a small drawer for use with the assortment feature
+of the Concertina, a type of computer keyboard.
 
 ## Usage
 
@@ -9,7 +10,7 @@ under `output/scad` and, optionally, STL files for slicing and 3D printing.
 
 ## License
 
-Copyright © 2019 Viktor Eikman
+Copyright © 2020 Viktor Eikman
 
 This software is distributed under the [Eclipse Public License](LICENSE-EPL)
 (EPL) v2.0 or any later version thereof. This software may also be made

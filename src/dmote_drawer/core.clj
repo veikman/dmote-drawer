@@ -19,7 +19,7 @@
 
 (defn write-files
   [{:keys [whitelist] :as options}]
-  (let [roster [{:name "dmote-drawer-base-model",
+  (let [roster [{:name "concertina-drawer",
                  :model-main (models/base-model options)}]]
     (build-all (filter-by-name whitelist roster) options)))
 
