@@ -20,7 +20,9 @@
 (defn write-files
   [{:keys [whitelist] :as options}]
   (let [roster [{:name "concertina-drawer",
-                 :model-main (models/base-model options)}]]
+                 :model-main (models/base-model options)
+                 :minimum-face-size 1
+                 :minimum-face-angle 1}]]
     (build-all (filter-by-name whitelist roster) options)))
 
 (defn -main
