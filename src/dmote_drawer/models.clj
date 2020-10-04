@@ -43,14 +43,17 @@
         (model/translate [(+ (/ x -2) r-lesser) r-lesser] (model/circle r-lesser))
         (model/translate [(- (/ x 2) r-lesser) r-lesser] (model/circle r-lesser))))))
 
-(def magnet-target
-  (model/translate [0 0 0.5]
-    (model/rotate [π 0 0]
-      (bolt {:m-diameter 3
-             :head-type :countersunk
-             :total-length (nth port-size 2)
-             :channel-length 2
-             :compensator (error-fn 0.5)}))))
+(let [leeway 3]
+  (def magnet-target
+    "A hole for a screw for keeping a drawer in place, by interacting, at
+    adjustable strength, with a magnet in the shelf underneath the drawer."
+    (->> (bolt {:m-diameter 3
+                :head-type :countersunk
+                :total-length (- (nth port-size 2) leeway)
+                :channel-length leeway
+                :compensator (error-fn 0.5)})
+      (model/rotate [π 0 0])
+      (model/translate [0 0 leeway]))))
 
 (defn- cigar-end
   [coefficient]
@@ -58,6 +61,7 @@
     (model/sphere (/ (first cigar-end-size) 2))))
 
 (defn- cigar-model
+  "Negative or positive space for an alcove for the drawer’s handle."
   [coefficient]
   (model/hull
     (model/translate cigar-end-position (cigar-end coefficient))
