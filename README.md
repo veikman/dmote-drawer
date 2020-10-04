@@ -1,7 +1,10 @@
 # `dmote-drawer`
 
-An application that produces a small drawer for use with the assortment feature
-of the Concertina, a type of computer keyboard.
+An application that produces the shape of a small assortment drawer.
+
+The drawer fits the assortment feature of the Concertina, a type of computer
+keyboard, as it is defined by bundled configuration files with version 0.6.0 of
+the [DMOTE application](https://github.com/veikman/dactyl-keyboard).
 
 ## Usage
 
