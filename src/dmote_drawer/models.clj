@@ -15,7 +15,7 @@
 (def drawer-size (mapv - port-size dfm-margins))
 
 (def magnet-inset 4)  ; From the back of the port.
-(def r-rear 15)
+(def r-rear 18)
 (def r-lesser 3)
 (def cigar-end-size [38 22 22])
 (def cigar-offset 4)
