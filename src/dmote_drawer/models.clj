@@ -11,18 +11,24 @@
 (def port-size [162 92 25])
 (def wall-thickness 2)
 (def floor-thickness 1)
-(def dfm-margins [0.5 0.25 0.15])
+(def dfm-margins [0.5 0.25 0.6])
 (def drawer-size (mapv - port-size dfm-margins))
+(def handle-width-outer 8)
+(def handle-width-inner 3)
 
 (def magnet-inset 4)  ; From the back of the port.
+(def magnet-margin 0.25)
 (def r-rear 18)
 (def r-lesser 3)
-(def cigar-end-size [38 22 22])
-(def cigar-offset 4)
-(def cigar-end-position [10 -6 (/ (nth drawer-size 2) 2)])
+(def r-fillet 1.5)
+(def outer-cigar-end-size [40 24 22])
+(def inner-cigar-end-size [20 8 12])
+(def outer-cigar-end-position [8 -7 (/ (nth drawer-size 2) 2)])
+(def inner-cigar-end-position [6 3 (/ (nth drawer-size 2) 2)])
 
-(def screw-position [(- (/ (first drawer-size) 2) magnet-inset)
-                     (- (second drawer-size) magnet-inset)])
+(def screw-xy (+ magnet-inset magnet-margin))
+(def screw-position [(- (/ (first drawer-size) 2) screw-xy)
+                     (- (second drawer-size) screw-xy)])
 
 (let [[x y _] drawer-size
       depth (- y r-lesser)]
@@ -37,11 +43,12 @@
 (let [[x y _] (mapv - drawer-size (repeat 3 (* 2 wall-thickness)))]
   (def inner-contour
     (model/translate [0 wall-thickness]
-      (model/hull
-        (model/translate [(+ (/ x -2) r-rear) (- y r-rear)] (model/circle r-rear))
-        (model/translate [(- (/ x 2) r-rear) (- y r-rear)] (model/circle r-rear))
-        (model/translate [(+ (/ x -2) r-lesser) r-lesser] (model/circle r-lesser))
-        (model/translate [(- (/ x 2) r-lesser) r-lesser] (model/circle r-lesser))))))
+      (model/offset (- r-fillet)
+        (model/hull
+          (model/translate [(+ (/ x -2) r-rear) (- y r-rear)] (model/circle r-rear))
+          (model/translate [(- (/ x 2) r-rear) (- y r-rear)] (model/circle r-rear))
+          (model/translate [(+ (/ x -2) r-lesser) r-lesser] (model/circle r-lesser))
+          (model/translate [(- (/ x 2) r-lesser) r-lesser] (model/circle r-lesser)))))))
 
 (let [leeway 3]
   (def magnet-target
@@ -56,18 +63,26 @@
       (model/translate [0 0 leeway]))))
 
 (defn- cigar-end
-  [coefficient]
-  (model/resize (map (partial * coefficient) cigar-end-size)
-    (model/sphere (/ (first cigar-end-size) 2))))
+  [base offset]
+  (model/resize (map (partial + offset) base)
+    (model/sphere (/ (first base) 2))))
 
 (defn- cigar-model
   "Negative or positive space for an alcove for the drawer’s handle."
-  [coefficient]
+  [position base-size offset]
   (model/hull
-    (model/translate cigar-end-position (cigar-end coefficient))
-    (model/translate (update cigar-end-position 0 -) (cigar-end coefficient))))
+    (model/translate position (cigar-end base-size offset))
+    (model/translate (update position 0 -) (cigar-end base-size offset))))
 
-(def cigar-shell (cigar-model 1.2))
+(defn- cigar-pair
+  [offset]
+  (model/hull
+    (cigar-model outer-cigar-end-position outer-cigar-end-size offset)
+    (cigar-model inner-cigar-end-position inner-cigar-end-size offset)))
+
+(def cigar-core (cigar-pair 0))
+(def cigar-shell (cigar-pair wall-thickness))
+
 (def drawer-shell
   (model/extrude-linear {:height (nth drawer-size 2), :center false}
                         outer-contour))
@@ -80,16 +95,18 @@
     (model/translate [0 (- big) 0]
       (model/cube (* 2 big) (* 2 big) big))
     (model/difference
-      (model/translate [0 0 floor-thickness]
-        (model/extrude-linear {:height (nth drawer-size 2), :center false}
-                              inner-contour))
+      (model/translate [0 0 (+ floor-thickness r-fillet)]
+        (model/minkowski
+          (model/extrude-linear {:height (nth drawer-size 2), :center false}
+                                inner-contour)
+          (model/sphere r-fillet)))
       (model/hull
         cigar-shell
         (model/translate [0 0 (- big)] cigar-shell)))
     (model/translate screw-position magnet-target)
     (model/translate (update screw-position 0 -) magnet-target)
     (model/difference
-      (cigar-model 1)
+      cigar-core
       (model/hull
-        (model/cube 4 wall-thickness big)
-        (model/translate [0 6 0] (model/cube 1 1 big))))))
+        (model/cube handle-width-outer wall-thickness big)
+        (model/translate [0 8 0] (model/cube handle-width-inner 1 big))))))
