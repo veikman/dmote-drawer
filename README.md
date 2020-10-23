@@ -1,10 +1,16 @@
-# `dmote-drawer`
+# Assortment drawers for the DMOTE application
 
-An application that produces the shape of a small assortment drawer.
+Every item in your home and office needs a good set of assortment drawers to go
+inside it. Transform your computer keyboard into a cash register or a sewing
+kit with this tiny spin-off application.
 
-The drawer fits the assortment feature of the Concertina, a type of computer
-keyboard, as it is defined by bundled configuration files with version 0.6.0 of
-the [DMOTE application](https://github.com/veikman/dactyl-keyboard).
+![Image of two printed drawers](resources/pair_of_prints.jpg)
+
+In its current version, `dmote-drawer` is a hard-coded design for a type of
+drawer that fits the optional assortment cabinet feature of the Concertina, a
+type of computer keyboard, as the Concertina is defined by bundled
+configuration files that come with version 0.6.0 of the [DMOTE
+application](https://github.com/veikman/dactyl-keyboard).
 
 ## Usage
 
